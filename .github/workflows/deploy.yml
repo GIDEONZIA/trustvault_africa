@@ -1,0 +1,13 @@
+# Inside your .github/workflows/deploy.yml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # ... other steps ...
+      - name: Run Tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DATABASE_URL: sqlite:///:memory:  # Use an in-memory DB for CI tests
+          DEBUG: "True"
+        run: python manage.py test --settings=config.settings.development

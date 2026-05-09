@@ -2,7 +2,7 @@
 from .base import *
 
 DEBUG = True
-SECRET_KEY = 'test-secret-key-not-for-production'
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-test-key-not-for-production-1234567890')
 
 DATABASES = {
     'default': {
