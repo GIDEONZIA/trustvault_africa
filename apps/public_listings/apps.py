@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class PublicListingsConfig(AppConfig):
-    name = 'public_listings'
+    name = 'apps.public_listings'

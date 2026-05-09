@@ -8,18 +8,19 @@ import environ
 from pathlib import Path
 
 # Build paths
+# BASE_DIR points to the root (where manage.py lives)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Environment variables
+# Initialize environment variables
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, []),
 )
 
-# Read .env file
+# Read .env file from root
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY
 SECRET_KEY = env('SECRET_KEY')
 
 # Application definition
@@ -42,6 +43,7 @@ THIRD_PARTY_APPS = [
     'django_htmx',
 ]
 
+# Note: Ensure name='apps.xxxx' in every apps.py file in these folders
 LOCAL_APPS = [
     'apps.core',
     'apps.accounts',
@@ -52,6 +54,8 @@ LOCAL_APPS = [
     'apps.maintenance',
     'apps.dashboard',
     'apps.public_listings',
+    'apps.notifications',
+    'apps.subscriptions',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -91,8 +95,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
+# This will use DATABASE_URL from your .env file
 DATABASES = {
-    'default': env.db()
+    'default': env.db('DATABASE_URL')
 }
 
 # Password validation
@@ -109,34 +114,39 @@ TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# Static & Media files
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom user model
-AUTH_USER_MODEL = 'accounts.User'
+# --- AUTHENTICATION ---
+AUTH_USER_MODEL = 'accounts.User' 
 
-# Django AllAuth
 SITE_ID = 1
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+# This replaces the old email/username required flags
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+# Remove these old lines completely:
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
+
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGOUT_ON_GET = True
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Django REST Framework
+
+
+# --- API & SERVICES ---
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -156,11 +166,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
-# Security headers (production)
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
-
 # M-Pesa Configuration
 MPESA_CONFIG = {
     'CONSUMER_KEY': env('MPESA_CONSUMER_KEY', default=''),
@@ -176,11 +181,11 @@ AT_CONFIG = {
     'API_KEY': env('AT_API_KEY', default=''),
 }
 
-# Email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Email - Dynamic based on environment
+EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = env('EMAIL_PORT', default=587)
-EMAIL_USE_TLS = True
+EMAIL_PORT = env('EMAIL_PORT', cast=int, default=587)
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@rentflow.co.ke')

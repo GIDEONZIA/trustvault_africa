@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
-
 class CoreConfig(AppConfig):
-    name = 'core'
+    default_auto_field = 'django.db.backends.BigAutoField'
+    name = 'apps.core'  # MUST include 'apps.' prefix

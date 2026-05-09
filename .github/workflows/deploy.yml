@@ -1,0 +1,14 @@
+name: Deploy RentFlow
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Placeholder Deploy Step
+        run: echo "Deploy logic will go here once you're ready!"
