@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Detailed Transactions</h1>
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-4 border-b bg-gray-50">
+        <p class="text-sm text-gray-600">Complete audit trail for all Zia Property Ltd financial movements.</p>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-white border-b">
+                <tr>
+                    <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Timestamp</th>
+                    <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Tenant</th>
+                    <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Method</th>
+                    <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Amount</th>
+                    <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Receipt</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for tx in transactions %}
+                <tr>
+                    <td class="px-4 py-4 text-sm text-gray-500">{{ tx.created_at|date:"Y-m-d H:i" }}</td>
+                    <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ tx.tenant.get_full_name }}</td>
+                    <td class="px-4 py-4 text-sm uppercase text-gray-600">{{ tx.payment_method }}</td>
+                    <td class="px-4 py-4 text-sm font-bold">KES {{ tx.amount }}</td>
+                    <td class="px-4 py-4 text-sm text-primary-600">
+                        {% if tx.status == 'completed' %}
+                        <a href="#" class="hover:underline">Download</a>
+                        {% else %}
+                        --
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

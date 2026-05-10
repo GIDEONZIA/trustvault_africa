@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Payment History</h1>
+    <a href="{% url 'payments:stk_push' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium">+ Make a Payment</a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 border-b">
+            <tr>
+                <th class="p-4 text-sm font-semibold text-gray-600">Date</th>
+                <th class="text-sm font-semibold text-gray-600">Reference</th>
+                <th class="text-sm font-semibold text-gray-600">Type</th>
+                <th class="text-sm font-semibold text-gray-600">Amount</th>
+                <th class="text-sm font-semibold text-gray-600">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for payment in payments %}
+            <tr class="hover:bg-gray-50 transition">
+                <td class="p-4 text-sm">{{ payment.created_at|date:"M d, Y" }}</td>
+                <td class="text-sm font-medium">{{ payment.reference|default:"--" }}</td>
+                <td class="text-sm capitalize">{{ payment.get_transaction_type_display }}</td>
+                <td class="text-sm font-bold text-gray-900">KES {{ payment.amount }}</td>
+                <td>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium
+                        {% if payment.status == 'completed' %}bg-green-100 text-green-800
+                        {% elif payment.status == 'failed' %}bg-red-100 text-red-800
+                        {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                        {{ payment.status|upper }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="p-8 text-center text-gray-500 italic">No payment records found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

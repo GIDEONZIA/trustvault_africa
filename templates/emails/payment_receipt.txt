@@ -1,0 +1,1 @@
+Payment received! Receipt: {{ receipt_no }}. Amount: KES {{ amount }}. Thank you for choosing Zia Property Ltd.

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Landlord Dashboard - Zia Property Ltd{% endblock %}
+
+{% block content %}
+<div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Management Overview</h1>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-primary-500">
+            <p class="text-sm text-gray-500 uppercase font-bold">Total Revenue</p>
+            <p class="text-2xl font-bold text-gray-800">KES {{ revenue|default:"0" }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+            <p class="text-sm text-gray-500 uppercase font-bold">Occupancy</p>
+            <p class="text-2xl font-bold text-gray-800">{{ occupancy_rate|default:"0" }}%</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
+            <p class="text-sm text-gray-500 uppercase font-bold">Pending Requests</p>
+            <p class="text-2xl font-bold text-gray-800">{{ pending_maintenance|default:"0" }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
+            <p class="text-sm text-gray-500 uppercase font-bold">Arrears</p>
+            <p class="text-2xl font-bold text-gray-800">KES {{ total_arrears|default:"0" }}</p>
+        </div>
+    </div>
+
+    <!-- Charts Placeholder -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="font-bold mb-4">Monthly Revenue</h3>
+            <div class="h-64 bg-gray-50 flex items-center justify-center text-gray-400">Revenue Chart Area</div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="font-bold mb-4">Maintenance Status</h3>
+            <div class="h-64 bg-gray-50 flex items-center justify-center text-gray-400">Status Chart Area</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

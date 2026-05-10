@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Invoices</h1>
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50">
+            <tr><th class="p-4">Invoice #</th><th>Due Date</th><th>Total</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody class="divide-y">
+            {% for invoice in invoices %}
+            <tr><td class="p-4 font-bold">{{ invoice.invoice_number }}</td><td>{{ invoice.due_date }}</td><td>KES {{ invoice.total_amount }}</td>
+            <td><span class="px-2 py-1 rounded text-xs {% if invoice.status == 'paid' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">{{ invoice.status }}</span></td>
+            <td><a href="{% url 'invoices:invoice_detail' invoice.id %}" class="text-primary-600">View</a></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

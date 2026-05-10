@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Unit Inventory</h1>
+    <a href="{% url 'properties:unit_form' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">+ Add Unit</a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 border-b">
+            <tr>
+                <th class="p-4">Unit #</th>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Rent</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y">
+            {% for unit in units %}
+            <tr class="hover:bg-gray-50">
+                <td class="p-4 font-bold">{{ unit.unit_number }}</td>
+                <td>{{ unit.property.name }}</td>
+                <td>{{ unit.get_unit_type_display }}</td>
+                <td>KES {{ unit.monthly_rent }}</td>
+                <td>
+                    {% if unit.is_available %}
+                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Available</span>
+                    {% else %}
+                        <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">Occupied</span>
+                    {% endif %}
+                </td>
+                <td><a href="{% url 'properties:unit_detail' unit.id %}" class="text-primary-600 hover:underline">View</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="p-4 text-center text-gray-500">No units added yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

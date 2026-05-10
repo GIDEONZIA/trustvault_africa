@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Arrears Report</h1>
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50">
+            <tr><th class="p-4">Tenant</th><th>Unit</th><th>Amount Overdue</th><th>Days Late</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            {% for item in arrears %}
+            <tr class="border-t"><td class="p-4">{{ item.tenant }}</td><td>{{ item.unit }}</td><td class="text-red-600 font-bold">KES {{ item.amount }}</td><td>{{ item.days }}</td><td><button class="text-primary-600">Send Reminder</button></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -66,8 +66,43 @@ UNFOLD = {
     "SITE_HEADER": "Zia Property Administration",
     "SITE_SYMBOL": "apartment",
     "SHOW_HISTORY": True,
-    "TABS": [],
-    "EXTENSIONS": {
+    "TABS": [
+            {
+                "models": [
+                    "properties.property",
+                    "properties.unit",
+                    "properties.propertyimage",
+                    "properties.amenity",
+                ],
+                "items": [
+                    {
+                        "title": "Real Estate Overview",
+                        "link": "/admin/properties/property_changelist",
+                    },
+                    {
+                        "title": "Unit Inventory",
+                        "link": "/admin/properties/unit_changelist",
+                    },
+                ],
+            },
+            {
+                "models": [
+                    "payments.transaction",
+                    "payments.mpesapayment",
+                    "invoices.invoice",
+                ],
+                "items": [
+                    {
+                        "title": "Cash Flow",
+                        "link": "/admin/payments/transaction_changelist",
+                    },
+                    {
+                        "title": "Billing",
+                        "link": "/admin/invoices/invoice_changelist",
+                    },
+                ],
+            },
+        ],    "EXTENSIONS": {
         "modeltranslation": False,
     },
     "COLORS": {

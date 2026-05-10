@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Maintenance Requests - Zia Property Ltd{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Maintenance Requests</h1>
+    {% if user.is_tenant %}
+    <a href="{% url 'maintenance:request_create' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">New Request</a>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 border-b">
+            <tr>
+                <th class="p-4">Category</th>
+                <th>Unit</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y">
+            {% for request in requests %}
+            <tr class="hover:bg-gray-50">
+                <td class="p-4 font-bold capitalize">{{ request.category }}</td>
+                <td>{{ request.unit.unit_number }}</td>
+                <td>
+                    <span class="px-2 py-1 rounded text-xs font-bold 
+                        {% if request.priority == 'urgent' %}bg-red-100 text-red-700
+                        {% elif request.priority == 'high' %}bg-orange-100 text-orange-700
+                        {% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ request.priority|upper }}
+                    </span>
+                </td>
+                <td>
+                    <span class="px-2 py-1 rounded text-xs 
+                        {% if request.status == 'completed' %}bg-green-100 text-green-800
+                        {% elif request.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ request.get_status_display }}
+                    </span>
+                </td>
+                <td class="text-sm text-gray-500">{{ request.created_at|date:"M d, Y" }}</td>
+                <td><a href="{% url 'maintenance:request_detail' request.id %}" class="text-primary-600 hover:underline">View</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="p-4 text-center text-gray-500">No maintenance requests found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

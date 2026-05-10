@@ -1,0 +1,1 @@
+Hi {{ name }}, your invoice {{ invoice_no }} for KES {{ amount }} is due on {{ due_date }}. Please pay via our portal.

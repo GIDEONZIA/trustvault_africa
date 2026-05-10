@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Available Units - Zia Property Ltd{% endblock %}
+
+{% block content %}
+<div class="bg-primary-700 py-12 px-4 mb-10 rounded-xl text-center text-white">
+    <h1 class="text-4xl font-bold mb-4">Find Your Next Home</h1>
+    <p class="text-xl text-primary-100">Browse our premium listings and book a viewing today.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+    {% for listing in listings %}
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition hover:shadow-2xl border border-gray-100">
+        <div class="relative h-64">
+            <img src="{{ listing.featured_image|default:'https://unsplash.com' }}" 
+                 class="w-full h-full object-cover" alt="{{ listing.title }}">
+            {% if listing.is_featured %}
+            <span class="absolute top-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full uppercase">Featured</span>
+            {% endif %}
+            <div class="absolute bottom-4 right-4 bg-white px-3 py-1 rounded-lg font-bold text-primary-600 shadow-md">
+                KES {{ listing.unit.monthly_rent }}/mo
+            </div>
+        </div>
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">{{ listing.title }}</h2>
+            <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ listing.description }}</p>
+            
+            <div class="flex items-center gap-4 text-sm text-gray-600 mb-6 border-t pt-4">
+                <span class="flex items-center gap-1">🛏️ {{ listing.unit.bedrooms }} Beds</span>
+                <span class="flex items-center gap-1">🚿 {{ listing.unit.bathrooms }} Baths</span>
+                <span class="flex items-center gap-1">📍 {{ listing.unit.property.city }}</span>
+            </div>
+            
+            <a href="{% url 'public_listings:listing_detail' listing.id %}" 
+               class="block text-center bg-primary-600 text-white font-bold py-3 rounded-lg hover:bg-primary-700 transition">
+                View Details
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-3 text-center py-20">
+        <p class="text-gray-400 text-xl italic">No units are currently listed. Please check back later!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
