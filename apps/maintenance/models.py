@@ -4,9 +4,6 @@ from apps.core.models import TimestampedModel
 
 
 class MaintenanceRequest(TimestampedModel):
-    """
-    Tenant maintenance/repair request.
-    """
     CATEGORY_CHOICES = [
         ('plumbing', 'Plumbing'),
         ('electrical', 'Electrical'),
@@ -45,37 +42,27 @@ class MaintenanceRequest(TimestampedModel):
         related_name='maintenance_requests'
     )
     
-    # Request details
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField()
-    priority = models.CharField(
-        max_length=10, 
-        choices=PRIORITY_CHOICES, 
-        default='medium'
-    )
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     
-    # Photos
-    photo_1 = models.ImageField(upload_to='maintenance/%Y/%m/', blank=True)
-    photo_2 = models.ImageField(upload_to='maintenance/%Y/%m/', blank=True)
-    photo_3 = models.ImageField(upload_to='maintenance/%Y/%m/', blank=True)
+    photo_1 = models.URLField(blank=True)
+    photo_2 = models.URLField(blank=True)
+    photo_3 = models.URLField(blank=True)
     
-    # Status workflow
-    status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES, 
-        default='submitted'
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
     
-    # Scheduling
     preferred_date = models.DateField(null=True, blank=True)
     preferred_time = models.TimeField(null=True, blank=True)
     
-    # Resolution
     resolution_notes = models.TextField(blank=True)
     tenant_satisfaction = models.PositiveIntegerField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'maintenance_request'
+        db_table = 'maintenance_maintenance_request'
         ordering = ['-created_at']
 
     def __str__(self):
@@ -83,9 +70,6 @@ class MaintenanceRequest(TimestampedModel):
 
 
 class Vendor(TimestampedModel):
-    """
-    Service provider directory for maintenance work.
-    """
     SPECIALTY_CHOICES = [
         ('plumbing', 'Plumbing'),
         ('electrical', 'Electrical'),
@@ -98,23 +82,15 @@ class Vendor(TimestampedModel):
     landlord = models.ForeignKey(
         'accounts.User',
         on_delete=models.CASCADE,
-        related_name='vendors',
-        limit_choices_to={'is_landlord': True}
+        related_name='vendors'
     )
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
     email = models.EmailField(blank=True)
-    specialty = models.CharField(
-        max_length=20, 
-        choices=SPECIALTY_CHOICES
-    )
-    rating = models.DecimalField(
-        max_digits=3, 
-        decimal_places=2, 
-        null=True, 
-        blank=True
-    )
+    specialty = models.CharField(max_length=20, choices=SPECIALTY_CHOICES)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'maintenance_vendor'
@@ -124,9 +100,6 @@ class Vendor(TimestampedModel):
 
 
 class MaintenanceTask(TimestampedModel):
-    """
-    Assigned maintenance work.
-    """
     STATUS_CHOICES = [
         ('assigned', 'Assigned'),
         ('in_progress', 'In Progress'),
@@ -151,56 +124,34 @@ class MaintenanceTask(TimestampedModel):
         on_delete=models.CASCADE,
         related_name='assigned_tasks'
     )
-    status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES,
-        default='assigned'
-    )
-    estimated_cost = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2, 
-        null=True, 
-        blank=True
-    )
-    actual_cost = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2, 
-        null=True, 
-        blank=True
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='assigned')
+    estimated_cost = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    actual_cost = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     scheduled_date = models.DateField(null=True, blank=True)
     completed_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'maintenance_task'
+        db_table = 'maintenance_maintenance_task'
 
     def __str__(self):
         return f"Task for {self.request}"
 
 
 class MaintenanceExpense(TimestampedModel):
-    """
-    Cost tracking for maintenance repairs.
-    """
     task = models.ForeignKey(
         MaintenanceTask,
         on_delete=models.CASCADE,
         related_name='expenses'
     )
-    amount = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
-    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
     description = models.CharField(max_length=255)
-    receipt = models.FileField(
-        upload_to='maintenance/receipts/%Y/%m/', 
-        blank=True
-    )
+    receipt_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'maintenance_expense'
+        db_table = 'maintenance_maintenance_expense'
 
     def __str__(self):
         return f"KES {self.amount} - {self.description}"

@@ -3,9 +3,6 @@ from apps.core.models import TimestampedModel
 
 
 class PublicListing(TimestampedModel):
-    """
-    Marketing listing for vacant units.
-    """
     unit = models.OneToOneField(
         'properties.Unit',
         on_delete=models.CASCADE,
@@ -13,13 +10,12 @@ class PublicListing(TimestampedModel):
     )
     title = models.CharField(max_length=255)
     description = models.TextField()
-    featured_image = models.ImageField(
-        upload_to='listings/%Y/%m/', 
-        blank=True
-    )
+    featured_image = models.URLField()
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     view_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'public_listing'
@@ -30,9 +26,6 @@ class PublicListing(TimestampedModel):
 
 
 class Inquiry(TimestampedModel):
-    """
-    Prospect contact for a listing.
-    """
     STATUS_CHOICES = [
         ('new', 'New'),
         ('contacted', 'Contacted'),
@@ -50,11 +43,8 @@ class Inquiry(TimestampedModel):
     phone = models.CharField(max_length=15)
     email = models.EmailField(blank=True)
     message = models.TextField(blank=True)
-    status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES,
-        default='new'
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'public_inquiry'
@@ -64,9 +54,6 @@ class Inquiry(TimestampedModel):
 
 
 class ViewingSchedule(TimestampedModel):
-    """
-    Property tour appointments.
-    """
     STATUS_CHOICES = [
         ('scheduled', 'Scheduled'),
         ('completed', 'Completed'),
@@ -81,12 +68,9 @@ class ViewingSchedule(TimestampedModel):
     )
     scheduled_date = models.DateField()
     scheduled_time = models.TimeField()
-    status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES,
-        default='scheduled'
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
     notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'public_viewing_schedule'

@@ -4,9 +4,6 @@ from apps.core.models import TimestampedModel
 
 
 class Property(TimestampedModel):
-    """
-    A rental property or building owned by a landlord.
-    """
     PROPERTY_TYPES = [
         ('apartment', 'Apartment Building'),
         ('bungalow', 'Bungalow'),
@@ -18,8 +15,7 @@ class Property(TimestampedModel):
     landlord = models.ForeignKey(
         'accounts.User',
         on_delete=models.CASCADE,
-        related_name='properties',
-        limit_choices_to={'is_landlord': True}
+        related_name='properties'
     )
     name = models.CharField(max_length=255)
     address = models.TextField()
@@ -28,27 +24,14 @@ class Property(TimestampedModel):
     property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
     description = models.TextField(blank=True)
     
-    # Location
-    latitude = models.DecimalField(
-        max_digits=9, 
-        decimal_places=6, 
-        null=True, 
-        blank=True
-    )
-    longitude = models.DecimalField(
-        max_digits=9, 
-        decimal_places=6, 
-        null=True, 
-        blank=True
-    )
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     
-    # Management
-    management_fee_percentage = models.DecimalField(
-        max_digits=5, 
-        decimal_places=2, 
-        default=0
-    )
+    management_fee_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'properties_property'
@@ -57,19 +40,8 @@ class Property(TimestampedModel):
     def __str__(self):
         return f"{self.name} - {self.city}"
 
-    @property
-    def unit_count(self):
-        return self.units.count()
-
-    @property
-    def occupied_units(self):
-        return self.units.filter(is_available=False).count()
-
 
 class Unit(TimestampedModel):
-    """
-    Individual rental unit within a property.
-    """
     UNIT_TYPES = [
         ('bedsitter', 'Bedsitter'),
         ('1_bedroom', '1 Bedroom'),
@@ -88,27 +60,18 @@ class Unit(TimestampedModel):
     unit_number = models.CharField(max_length=50)
     unit_type = models.CharField(max_length=20, choices=UNIT_TYPES)
     
-    # Specifications
     bedrooms = models.PositiveIntegerField(default=0)
     bathrooms = models.PositiveIntegerField(default=1)
     square_footage = models.PositiveIntegerField(null=True, blank=True)
     
-    # Financial
-    monthly_rent = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
-    )
-    deposit_amount = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
-    )
+    monthly_rent = models.DecimalField(max_digits=12, decimal_places=2)
+    deposit_amount = models.DecimalField(max_digits=12, decimal_places=2)
     
-    # Status
     is_available = models.BooleanField(default=True)
     available_from = models.DateField(null=True, blank=True)
+    
     description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'properties_unit'
@@ -119,9 +82,6 @@ class Unit(TimestampedModel):
 
 
 class Amenity(TimestampedModel):
-    """
-    Amenities available in a unit.
-    """
     unit = models.ForeignKey(
         Unit,
         on_delete=models.CASCADE,
@@ -138,29 +98,17 @@ class Amenity(TimestampedModel):
 
 
 class PropertyImage(TimestampedModel):
-    """
-    Photos of properties and units.
-    """
-    property = models.ForeignKey(
-        Property,
-        on_delete=models.CASCADE,
-        related_name='images',
-        null=True,
-        blank=True
-    )
     unit = models.ForeignKey(
         Unit,
         on_delete=models.CASCADE,
-        related_name='images',
-        null=True,
-        blank=True
+        related_name='images'
     )
-    image = models.ImageField(upload_to='properties/%Y/%m/')
-    caption = models.CharField(max_length=255, blank=True)
+    image_url = models.URLField()
     is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'properties_image'
+        db_table = 'properties_property_image'
 
     def __str__(self):
-        return f"Image for {self.property or self.unit}"
+        return f"Image for {self.unit}"

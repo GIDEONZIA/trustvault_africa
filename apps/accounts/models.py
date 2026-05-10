@@ -4,24 +4,20 @@ from apps.core.models import TimestampedModel
 
 
 class User(AbstractUser):
-    """
-    Custom user model with email as primary identifier.
-    Supports landlord, tenant, and vendor roles.
-    """
-    username = None
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     phone_number = models.CharField(max_length=15, blank=True)
     
-    # Role flags
     is_landlord = models.BooleanField(default=False)
     is_tenant = models.BooleanField(default=False)
     is_vendor = models.BooleanField(default=False)
     
-    # Verification
     email_verified = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
+    
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(null=True, blank=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -31,16 +27,13 @@ class User(AbstractUser):
         ordering = ['-date_joined']
 
     def __str__(self):
-        return f"{self.email} ({self.get_full_name()})"
+        return f"{self.email} - {self.first_name} {self.last_name}"
 
 
 class LandlordProfile(TimestampedModel):
-    """
-    Extended profile for property owners.
-    """
     user = models.OneToOneField(
         User, 
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         related_name='landlord_profile'
     )
     phone_number = models.CharField(max_length=15)
@@ -57,6 +50,7 @@ class LandlordProfile(TimestampedModel):
         ],
         default='free'
     )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'accounts_landlord_profile'
@@ -66,12 +60,9 @@ class LandlordProfile(TimestampedModel):
 
 
 class TenantProfile(TimestampedModel):
-    """
-    Extended profile for tenants.
-    """
     user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name='tenant_profile'
     )
     phone_number = models.CharField(max_length=15)
@@ -79,12 +70,8 @@ class TenantProfile(TimestampedModel):
     emergency_phone = models.CharField(max_length=15, blank=True)
     employer_name = models.CharField(max_length=150, blank=True)
     employer_phone = models.CharField(max_length=15, blank=True)
-    monthly_income = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2, 
-        null=True, 
-        blank=True
-    )
+    monthly_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'accounts_tenant_profile'

@@ -4,9 +4,6 @@ from apps.core.models import TimestampedModel
 
 
 class Transaction(TimestampedModel):
-    """
-    Financial transaction record for all payments.
-    """
     TRANSACTION_TYPES = [
         ('rent', 'Rent Payment'),
         ('deposit', 'Security Deposit'),
@@ -21,12 +18,6 @@ class Transaction(TimestampedModel):
         ('completed', 'Completed'),
         ('failed', 'Failed'),
         ('refunded', 'Refunded'),
-    ]
-
-    PAYMENT_METHODS = [
-        ('mpesa', 'M-Pesa'),
-        ('bank', 'Bank Transfer'),
-        ('cash', 'Cash'),
     ]
 
     tenant = models.ForeignKey(
@@ -44,33 +35,17 @@ class Transaction(TimestampedModel):
         related_name='transactions'
     )
     
-    # Transaction details
-    amount = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
-    )
-    transaction_type = models.CharField(
-        max_length=20, 
-        choices=TRANSACTION_TYPES
-    )
-    status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES, 
-        default='pending'
-    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     
-    # Payment method
-    payment_method = models.CharField(
-        max_length=20, 
-        choices=PAYMENT_METHODS,
-        default='mpesa'
-    )
+    payment_method = models.CharField(max_length=20, choices=[('mpesa', 'M-Pesa'), ('bank', 'Bank Transfer'), ('cash', 'Cash')])
     reference = models.CharField(max_length=255, blank=True)
     
-    # Metadata
     description = models.TextField(blank=True)
     processed_at = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'payments_transaction'
@@ -81,31 +56,26 @@ class Transaction(TimestampedModel):
 
 
 class MpesaPayment(TimestampedModel):
-    """
-    M-Pesa specific payment details.
-    """
     transaction = models.OneToOneField(
         Transaction,
         on_delete=models.CASCADE,
         related_name='mpesa_details'
     )
     
-    # M-Pesa identifiers
     merchant_request_id = models.CharField(max_length=255)
     checkout_request_id = models.CharField(max_length=255, db_index=True)
     mpesa_receipt_number = models.CharField(max_length=50, blank=True, db_index=True)
     
-    # Payer details
     phone_number = models.CharField(max_length=15)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     
-    # Response
     result_code = models.CharField(max_length=10, blank=True)
     result_desc = models.TextField(blank=True)
     
-    # Callback status
     callback_received = models.BooleanField(default=False)
     callback_processed = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'payments_mpesa_payment'
@@ -115,25 +85,17 @@ class MpesaPayment(TimestampedModel):
 
 
 class PaymentSchedule(TimestampedModel):
-    """
-    Recurring payment setup for automatic rent collection.
-    """
     lease = models.ForeignKey(
         'tenants.Lease',
         on_delete=models.CASCADE,
         related_name='payment_schedules'
     )
-    amount = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
-    )
-    due_day = models.PositiveIntegerField(
-        validators=[MinValueValidator(1), MinValueValidator(31)]
-    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    due_day = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
     last_run = models.DateTimeField(null=True, blank=True)
     next_run = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'payments_payment_schedule'
