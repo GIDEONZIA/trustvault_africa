@@ -22,10 +22,13 @@ if os.path.exists(env_file):
     environ.Env.read_env(env_file)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-dev-key-change-in-production')
+SECRET_KEY = env('SECRET_KEY')
 
 # Application definition
 DJANGO_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,6 +60,76 @@ LOCAL_APPS = [
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+UNFOLD = {
+    "SITE_TITLE": "Zia Property Ltd",
+    "SITE_HEADER": "Zia Property Administration",
+    "SITE_SYMBOL": "apartment",
+    "SHOW_HISTORY": True,
+    "TABS": [],
+    "EXTENSIONS": {
+        "modeltranslation": False,
+    },
+    "COLORS": {
+        "primary": {
+            "50": "250 252 255",
+            "100": "240 249 255",
+            "200": "186 230 253",
+            "300": "125 211 252",
+            "400": "56 189 248",
+            "500": "14 165 233",  # Zia Blue
+            "600": "2 132 199",
+            "700": "3 105 161",
+            "800": "7 89 131",
+            "900": "12 74 110",
+            "950": "8 51 68",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,  # Keeps it clean
+        "navigation": [
+            {
+                "title": "Property Management",
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Dashboard",
+                        "icon": "dashboard",
+                        "link": "/admin/",
+                    },
+                    {
+                        "title": "Properties",
+                        "icon": "home_work",
+                        "link": "/admin/properties/property/",
+                    },
+                    {
+                        "title": "Tenants",
+                        "icon": "group",
+                        "link": "/admin/tenants/lease/",
+                    },
+                ],
+            },
+            {
+                "title": "Financials",
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Invoices",
+                        "icon": "description",
+                        "link": "/admin/invoices/invoice/",
+                    },
+                    {
+                        "title": "Payments",
+                        "icon": "payments",
+                        "link": "/admin/payments/transaction/",
+                    },
+                ],
+            },
+        ],
+    },
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,7 +166,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database - with proper fallback
-if env('DATABASE_URL', default=None):
+if env('DATABASE_URL'):
     DATABASES = {
         'default': env.db()
     }
@@ -161,8 +234,8 @@ REST_FRAMEWORK = {
 }
 
 # Celery
-CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_BROKER_URL = env('REDIS_URL')
+CELERY_RESULT_BACKEND = env('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -175,24 +248,24 @@ X_FRAME_OPTIONS = 'DENY'
 
 # M-Pesa Configuration
 MPESA_CONFIG = {
-    'CONSUMER_KEY': env('MPESA_CONSUMER_KEY', default=''),
-    'CONSUMER_SECRET': env('MPESA_CONSUMER_SECRET', default=''),
-    'PASSKEY': env('MPESA_PASSKEY', default=''),
-    'SHORTCODE': env('MPESA_SHORTCODE', default='174379'),
-    'ENVIRONMENT': env('MPESA_ENVIRONMENT', default='sandbox'),
+    'CONSUMER_KEY': env('MPESA_CONSUMER_KEY'),
+    'CONSUMER_SECRET': env('MPESA_CONSUMER_SECRET'),
+    'PASSKEY': env('MPESA_PASSKEY'),
+    'SHORTCODE': env('MPESA_SHORTCODE'),
+    'ENVIRONMENT': env('MPESA_ENVIRONMENT'),
 }
 
 # Africa's Talking (SMS)
 AT_CONFIG = {
-    'USERNAME': env('AT_USERNAME', default='sandbox'),
-    'API_KEY': env('AT_API_KEY', default=''),
+    'USERNAME': env('AT_USERNAME'),
+    'API_KEY': env('AT_API_KEY'),
 }
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = env('EMAIL_PORT', default=587)
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@rentflow.co.ke')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')

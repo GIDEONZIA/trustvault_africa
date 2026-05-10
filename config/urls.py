@@ -15,8 +15,32 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+    # Core Admin
     path('admin/', admin.site.urls),
+
+    # Authentication & User Management
+    path('accounts/', include('allauth.urls')),
+    path('user-profiles/', include('apps.accounts.urls')),
+
+    # Business Logic Apps
+    path('dashboard/', include('apps.dashboard.urls')),
+    path('properties/', include('apps.properties.urls')),
+    path('tenants/', include('apps.tenants.urls')),
+    path('payments/', include('apps.payments.urls')),
+    path('invoices/', include('apps.invoices.urls')),
+    path('maintenance/', include('apps.maintenance.urls')),
+
+    # Public Facing App (Landing Page)
+    path('', include('apps.public_listings.urls')),
+
 ]
+
+# Support for Media (Photos/Uploads) and Static files
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

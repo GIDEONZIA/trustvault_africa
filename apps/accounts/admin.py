@@ -1,39 +1,30 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, LandlordProfile, TenantProfile
 
+class LandlordProfileInline(admin.StackedInline):
+    model = LandlordProfile
+    can_delete = False
+
+class TenantProfileInline(admin.StackedInline):
+    model = TenantProfile
+    can_delete = False
 
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
-    list_display = ['email', 'first_name', 'last_name', 'is_landlord', 'is_tenant', 'is_active']
-    list_filter = ['is_landlord', 'is_tenant', 'is_active', 'date_joined']
-    search_fields = ['email', 'first_name', 'last_name']
-    ordering = ['-date_joined']
-    
+class UserAdmin(BaseUserAdmin):
+    # Fieldsets define how the user edit page looks
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'phone_number')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number')}),
         ('Roles', {'fields': ('is_landlord', 'is_tenant', 'is_vendor')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+        ('Verification', {'fields': ('email_verified', 'phone_verified')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
-    
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'first_name', 'last_name', 'password1', 'password2'),
-        }),
-    )
+    list_display = ('email', 'first_name', 'last_name', 'is_landlord', 'is_tenant', 'is_staff')
+    list_filter = ('is_landlord', 'is_tenant', 'is_staff', 'is_active')
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('-date_joined',)
+    inlines = (LandlordProfileInline, TenantProfileInline)
 
-
-@admin.register(LandlordProfile)
-class LandlordProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone_number', 'subscription_tier', 'created_at']
-    list_filter = ['subscription_tier', 'created_at']
-    search_fields = ['user__email', 'user__first_name', 'user__last_name']
-
-
-@admin.register(TenantProfile)
-class TenantProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone_number', 'employer_name', 'created_at']
-    search_fields = ['user__email', 'user__first_name', 'employer_name']
+admin.site.register(LandlordProfile)
+admin.site.register(TenantProfile)
