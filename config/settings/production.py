@@ -2,8 +2,11 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.rentflow.co.ke'])
-
+ALLOWED_HOSTS = ['*']  # Or restrict to your Railway domain later
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.up.railway.app',
+    'https://*.railway.app',
+]
 SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
