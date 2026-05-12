@@ -15,9 +15,8 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     zlib1g-dev \
     libpng-dev \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
-
-# Create logs directory
 RUN mkdir -p /app/logs
 
 COPY requirements.txt .
@@ -26,8 +25,19 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput || true
-
 EXPOSE 8000
 
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4"]
+# Wait for DB, then migrate and start
+CMD sh -c "while ! nc -z db 5432; do sleep 1; done; \
+    python manage.py migrate && \
+    python manage.py collectstatic --noinput && \
+    gunicorn config.wsgi:application \
+    --bind 0.0.0.0:${PORT:-8000} \
+    --workers ${WORKERS:-2} \
+    --threads ${THREADS:-2} \
+    --worker-class gthread \
+    --timeout ${TIMEOUT:-120} \
+    --max-requests ${MAX_REQUESTS:-1000} \
+    --preload \
+    --access-logfile - \
+    --error-logfile -"

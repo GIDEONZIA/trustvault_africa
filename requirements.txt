@@ -1,27 +1,54 @@
+# Django Core
 Django==5.0.14
-django-jazzmin==3.0.1
-django-environ==0.13.0
-celery==5.6.3
-django-allauth==65.16.1
-django-celery-beat==2.9.0
-django-cors-headers==4.9.0
-django-htmx==1.27.0
-djangorestframework==3.17.1
-gunicorn==26.0.0
-whitenoise==6.12.0
-psycopg2-binary==2.9.12
-redis==7.4.0
-Pillow==11.3.0
-requests==2.32.5
-python-dateutil==2.9.0.post0
-sqlparse==0.5.5
 asgiref==3.11.1
+sqlparse==0.5.5
 typing_extensions==4.15.0
+
+# Admin & UI
+django-jazzmin==3.0.1
+django-htmx==1.27.0
+
+# Environment & Config
+django-environ==0.13.0
+
+# Authentication
+django-allauth==65.16.1
+
+# API
+djangorestframework==3.17.1
+django-cors-headers==4.9.0
+
+# Async Tasks
+celery==5.6.3
+django-celery-beat==2.9.0
+
+# Redis (Python client) — FIX: version should be 5.x, not 7.x
+redis==5.2.1
+
+# Database
+psycopg2-binary==2.9.12
+
+# WSGI Server (Production)
+gunicorn==26.0.0
+# REMOVED: uvicorn[standard] — not needed for WSGI deploy
+
+# Static Files
+whitenoise==6.12.0
+# Optional but recommended for better compression:
+# brotli==1.1.0
+
+# Image Processing
+Pillow==11.3.0
+
+# HTTP Requests
+requests==2.32.5
 urllib3==2.6.3
 certifi==2025.7.9
 charset-normalizer==3.4.3
 idna==3.10
-uvicorn[standard]
 
+# Utilities
+python-dateutil==2.9.0.post0
 
-django-celery-beat==2.9.0
+# Optional: Django extensions for debugging
+# django-extensions==3.2.3

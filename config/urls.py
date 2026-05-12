@@ -18,8 +18,36 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+from django.utils import timezone
+from django.db import connection, OperationalError
+
+
+# Health check endpoint for Railway
+def health_check(request):
+    health_status = {
+        "status": "healthy",
+        "service": "trustvault-api",
+        "timestamp": timezone.now().isoformat(),
+    }
+    
+    # Check database
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        health_status["database"] = "connected"
+    except OperationalError:
+        health_status["database"] = "disconnected"
+        health_status["status"] = "degraded"
+    
+    status_code = 200 if health_status["status"] == "healthy" else 503
+    return JsonResponse(health_status, status=status_code)
+
 
 urlpatterns = [
+    # Health check (must be FIRST - Railway checks this immediately)
+    path('health/', health_check, name='health_check'),
+
     # Core Admin
     path('admin/', admin.site.urls),
 
@@ -37,10 +65,10 @@ urlpatterns = [
 
     # Public Facing App (Landing Page)
     path('', include('apps.public_listings.urls')),
-
 ]
 
-# Support for Media (Photos/Uploads) and Static files
+# Static/Media: Only add Django's dev server in DEBUG
+# Whitenoise handles static in production via middleware
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Note: static() for STATIC_URL not needed - Whitenoise handles it

@@ -1,8 +1,3 @@
-"""
-RentFlow - Property Management SaaS
-Base settings shared across all environments
-"""
-
 import os
 import environ
 from pathlib import Path
@@ -13,7 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Environment variables
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, []),
+    # Fix: Parse ALLOWED_HOSTS as string then split
+    ALLOWED_HOSTS=(str, ''),
+    DATABASE_URL=(str, ''),
 )
 
 # Read .env file (optional - won't crash if missing)
@@ -23,6 +20,9 @@ if os.path.exists(env_file):
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
+
+# Fix: Parse ALLOWED_HOSTS properly
+ALLOWED_HOSTS = [host.strip() for host in env('ALLOWED_HOSTS').split(',') if host.strip()] or ['*']
 
 # Application definition
 DJANGO_APPS = [
@@ -156,6 +156,7 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success btn-glow",
     },
 }
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -191,7 +192,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database - with proper fallback
-if env('DATABASE_URL'):
+# Fix: Use env.db() safely with default empty string
+DATABASE_URL = env('DATABASE_URL', default='')
+if DATABASE_URL:
     DATABASES = {
         'default': env.db()
     }
@@ -222,6 +225,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 # Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -258,47 +262,47 @@ REST_FRAMEWORK = {
 }
 
 # Celery
-CELERY_BROKER_URL = env('REDIS_URL')
-CELERY_RESULT_BACKEND = env('REDIS_URL')
+CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
-# Security headers (production)
-# Disable HTTPS redirect for local development
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SECURE_HSTS_SECONDS = 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-SECURE_HSTS_PRELOAD = False
+# Security headers - REMOVED from base.py, moved to production.py only
+# These were overriding production settings!
+# SECURE_SSL_REDIRECT = False
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
+# SECURE_HSTS_SECONDS = 0
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+# SECURE_HSTS_PRELOAD = False
 
-# Keep your existing headers
+# Keep these non-HTTPS headers for local dev
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
 # M-Pesa Configuration
 MPESA_CONFIG = {
-    'CONSUMER_KEY': env('MPESA_CONSUMER_KEY'),
-    'CONSUMER_SECRET': env('MPESA_CONSUMER_SECRET'),
-    'PASSKEY': env('MPESA_PASSKEY'),
-    'SHORTCODE': env('MPESA_SHORTCODE'),
-    'ENVIRONMENT': env('MPESA_ENVIRONMENT'),
+    'CONSUMER_KEY': env('MPESA_CONSUMER_KEY', default=''),
+    'CONSUMER_SECRET': env('MPESA_CONSUMER_SECRET', default=''),
+    'PASSKEY': env('MPESA_PASSKEY', default=''),
+    'SHORTCODE': env('MPESA_SHORTCODE', default=''),
+    'ENVIRONMENT': env('MPESA_ENVIRONMENT', default='sandbox'),
 }
 
 # Africa's Talking (SMS)
 AT_CONFIG = {
-    'USERNAME': env('AT_USERNAME'),
-    'API_KEY': env('AT_API_KEY'),
+    'USERNAME': env('AT_USERNAME', default=''),
+    'API_KEY': env('AT_API_KEY', default=''),
 }
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = env('EMAIL_PORT', default=587)
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='TrustVault Africa <noreply@trustvault.africa>')

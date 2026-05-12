@@ -7,10 +7,9 @@ For more information on this file, see
 https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/
 """
 
+# config/asgi.py
 import os
-
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')  # Fix this too
 application = get_asgi_application()
