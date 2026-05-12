@@ -84,3 +84,5 @@ package-lock.json
 *.env.docker
 .env
 .env.*
+.env
+.env.*
