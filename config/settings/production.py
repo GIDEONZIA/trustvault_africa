@@ -4,7 +4,7 @@ from .base import *
 DEBUG = False
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.rentflow.co.ke'])
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

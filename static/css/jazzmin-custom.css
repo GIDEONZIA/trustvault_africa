@@ -1,0 +1,94 @@
+/* AI Glassmorphism Cards */
+.card {
+    background: rgba(20, 20, 30, 0.8) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Neon Glow Buttons */
+.btn-glow {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-glow:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    transform: translateY(-1px);
+}
+
+/* Sidebar AI Feel */
+.main-sidebar {
+    background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%) !important;
+    border-right: 1px solid rgba(0, 255, 255, 0.05);
+}
+
+.nav-sidebar .nav-link {
+    border-radius: 8px;
+    margin: 2px 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(0, 255, 255, 0.1) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.nav-sidebar .nav-link.active {
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.2), transparent) !important;
+    border-left: 3px solid #00ffff;
+}
+
+/* Navbar */
+.main-header {
+    background: linear-gradient(90deg, #0a0a0f, #1a1a2e) !important;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1) !important;
+}
+
+/* Tables */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 4px;
+}
+
+.table tbody tr {
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: rgba(0, 255, 255, 0.05) !important;
+    transform: scale(1.002);
+}
+
+/* Form Inputs */
+.form-control {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(0, 255, 255, 0.1) !important;
+    color: #e0e0e0 !important;
+}
+
+.form-control:focus {
+    border-color: #00ffff !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00ffff, #0088ff);
+    border-radius: 4px;
+}
+
+/* Selection */
+::selection {
+    background: rgba(0, 255, 255, 0.3);
+    color: #fff;
+}

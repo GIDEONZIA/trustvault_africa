@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TrustVault Africa Ltd{% endblock %}</title>
+    
+    <!-- Official Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            "50":"#eff6ff", "100":"#dbeafe", "200":"#bfdbfe", "300":"#93c5fd", 
+                            "400":"#60a5fa", "500":"#3b82f6", "600":"#2563eb", "700":"#1d4ed8", 
+                            "800":"#1e40af", "900":"#1e3a8a", "950":"#172554"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Material Symbols for Icons -->
+    <link rel="stylesheet" href="https://googleapis.com" />
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <!-- Navbar -->
+    {% include "navbar.html" %}
+
+    <!-- Messages/Alerts -->
+    {% include "messages.html" %}
+
+    <div class="flex pt-16 overflow-hidden bg-gray-50">
+        
+        <!-- Sidebar: Only shown if logged in -->
+        {% if user.is_authenticated %}
+            {% include "sidebar.html" %}
+        {% endif %}
+        
+        <!-- Main Content Area -->
+        <div id="main-content" class="relative w-full h-full overflow-y-auto bg-gray-50 {% if user.is_authenticated %}sm:ml-64{% endif %}">
+            <main class="p-6 min-h-screen">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer -->
+            {% include "footer.html" %}
+        </div>
+    </div>
+
+</body>
+</html>

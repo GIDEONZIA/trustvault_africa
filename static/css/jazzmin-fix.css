@@ -1,0 +1,11 @@
+.selector-available h2, .selector-chosen h2 {
+    background: #2c3e50 !important;
+    color: #fff !important;
+}
+.selector select {
+    background: #1a1a2e !important;
+    color: #fff !important;
+}
+.selector select option {
+    color: #fff !important;
+}

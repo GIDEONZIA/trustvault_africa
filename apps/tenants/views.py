@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from .models import Lease
 
 # Create your views here.
 from django.views.generic import ListView, DetailView
@@ -25,3 +28,10 @@ class LeaseDetailView(LoginRequiredMixin, DetailView):
         if self.request.user.is_staff:
             return Lease.objects.all()
         return Lease.objects.filter(tenant=self.request.user)
+    
+
+class LeaseCreateView(LoginRequiredMixin, CreateView):
+    model = Lease
+    template_name = 'tenants/lease_form.html'
+    fields = ['property', 'unit', 'tenant', 'start_date', 'end_date', 'monthly_rent', 'deposit_amount']
+    success_url = reverse_lazy('tenants:lease_list')

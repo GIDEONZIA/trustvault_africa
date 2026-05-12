@@ -4,7 +4,7 @@ from .models import PublicListing, Inquiry
 
 class ListingListView(ListView):
     model = PublicListing
-    template_name = 'public_listings/list.html'
+    template_name = 'public_listings/listing_list.html'
     context_object_name = 'listings'
     
     def get_queryset(self):
@@ -12,11 +12,11 @@ class ListingListView(ListView):
 
 class ListingDetailView(DetailView):
     model = PublicListing
-    template_name = 'public_listings/detail.html'
+    template_name = 'public_listings/listing_detail.html'
     context_object_name = 'listing'
 
-    def get_object(self):
-        obj = super().get_object()
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
         obj.view_count += 1
         obj.save()
         return obj
@@ -24,7 +24,7 @@ class ListingDetailView(DetailView):
 class InquiryCreateView(CreateView):
     model = Inquiry
     fields = ['name', 'phone', 'email', 'message']
-    template_name = 'public_listings/inquire_form.html'
+    template_name = 'public_listings/inquiry_form.html'
     
     def form_valid(self, form):
         form.instance.listing_id = self.kwargs['pk']

@@ -26,9 +26,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # Application definition
 DJANGO_APPS = [
-    'unfold',
-    'unfold.contrib.filters',
-    'unfold.contrib.forms',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,11 +43,13 @@ THIRD_PARTY_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'django_htmx',
+    'celery',
+    'django_celery_beat',
 ]
 
 LOCAL_APPS = [
-    'apps.core',
     'apps.accounts',
+    'apps.core',
     'apps.properties',
     'apps.tenants',
     'apps.payments',
@@ -61,111 +61,101 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-UNFOLD = {
-    "SITE_TITLE": "Zia Property Ltd",
-    "SITE_HEADER": "Zia Property Administration",
-    "SITE_SYMBOL": "apartment",
-    "SHOW_HISTORY": True,
-    "TABS": [
-            {
-                "models": [
-                    "properties.property",
-                    "properties.unit",
-                    "properties.propertyimage",
-                    "properties.amenity",
-                ],
-                "items": [
-                    {
-                        "title": "Real Estate Overview",
-                        "link": "/admin/properties/property_changelist",
-                    },
-                    {
-                        "title": "Unit Inventory",
-                        "link": "/admin/properties/unit_changelist",
-                    },
-                ],
-            },
-            {
-                "models": [
-                    "payments.transaction",
-                    "payments.mpesapayment",
-                    "invoices.invoice",
-                ],
-                "items": [
-                    {
-                        "title": "Cash Flow",
-                        "link": "/admin/payments/transaction_changelist",
-                    },
-                    {
-                        "title": "Billing",
-                        "link": "/admin/invoices/invoice_changelist",
-                    },
-                ],
-            },
-        ],    "EXTENSIONS": {
-        "modeltranslation": False,
+JAZZMIN_SETTINGS = {
+    "site_title": "TrustVault Africa",
+    "site_header": "TrustVault Africa",
+    "site_brand": "TrustVault™",
+    "site_logo": "images/logo.svg",
+    "site_logo_classes": "img-circle",
+    "welcome_sign": "TrustVault Africa · Secure Property Payments",
+    "copyright": "TrustVault Africa Ltd",
+    "search_model": ["accounts.User", "properties.Property"],
+    "user_avatar": None,
+    "show_userthemes": False,
+    "custom_css": "css/jazzmin-custom.css",
+    
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"], "icon": "fas fa-th-large"},
+        {"name": "Public Site", "url": "/", "new_window": True, "icon": "fas fa-external-link-alt"},
+    ],
+    
+    "usermenu_links": [
+        {"name": "Profile", "url": "accounts:profile_update", "icon": "fas fa-id-card"},
+        {"model": "accounts.User"},
+    ],
+    
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    
+    "order_with_respect_to": [
+        "accounts",
+        "auth",
+        "properties",
+        "financials",
+        "maintenance",
+    ],
+    
+    "icons": {
+        "accounts.User": "fas fa-fingerprint",
+        "accounts.LandlordProfile": "fas fa-crown",
+        "accounts.TenantProfile": "fas fa-id-badge",
+        "auth.Group": "fas fa-layer-group",
+        "properties.Property": "fas fa-city",
+        "properties.Unit": "fas fa-cube",
+        "properties.Lease": "fas fa-file-contract",
+        "financials.Invoice": "fas fa-file-invoice",
+        "financials.Transaction": "fas fa-exchange-alt",
+        "financials.Receipt": "fas fa-qrcode",
+        "maintenance.MaintenanceRequest": "fas fa-robot",
+        "maintenance.MaintenanceTask": "fas fa-microchip",
+        "maintenance.Expense": "fas fa-chart-line",
+        "listings.PublicListing": "fas fa-satellite-dish",
+        "listings.Inquiry": "fas fa-comment-dots",
     },
-    "COLORS": {
-        "primary": {
-            "50": "250 252 255",
-            "100": "240 249 255",
-            "200": "186 230 253",
-            "300": "125 211 252",
-            "400": "56 189 248",
-            "500": "14 165 233",  # Zia Blue
-            "600": "2 132 199",
-            "700": "3 105 161",
-            "800": "7 89 131",
-            "900": "12 74 110",
-            "950": "8 51 68",
-        },
+    
+    "default_icon_parents": "fas fa-folder-open",
+    "default_icon_children": "fas fa-angle-right",
+    
+    "ui_tweaks": {
+        "navbar_small_text": False,
+        "footer_small_text": True,
+        "body_small_text": False,
+        "brand_small_text": False,
+        "brand_colour": "navbar-dark",
+        "accent": "accent-cyan",
+        "navbar": "navbar-dark navbar-black",
+        "no_navbar_border": True,
+        "sidebar": "sidebar-dark-black",
+        "sidebar_nav_small_text": False,
+        "sidebar_disable_expand": False,
+        "sidebar_nav_child_indent": True,
+        "sidebar_nav_compact_style": True,
+        "sidebar_nav_legacy_style": False,
+        "sidebar_nav_flat_style": True,
     },
-    "SIDEBAR": {
-        "show_search": True,
-        "show_all_applications": False,  # Keeps it clean
-        "navigation": [
-            {
-                "title": "Property Management",
-                "collapsible": True,
-                "items": [
-                    {
-                        "title": "Dashboard",
-                        "icon": "dashboard",
-                        "link": "/admin/",
-                    },
-                    {
-                        "title": "Properties",
-                        "icon": "home_work",
-                        "link": "/admin/properties/property/",
-                    },
-                    {
-                        "title": "Tenants",
-                        "icon": "group",
-                        "link": "/admin/tenants/lease/",
-                    },
-                ],
-            },
-            {
-                "title": "Financials",
-                "collapsible": True,
-                "items": [
-                    {
-                        "title": "Invoices",
-                        "icon": "description",
-                        "link": "/admin/invoices/invoice/",
-                    },
-                    {
-                        "title": "Payments",
-                        "icon": "payments",
-                        "link": "/admin/payments/transaction/",
-                    },
-                ],
-            },
-        ],
-    },
+    
+    "related_modal_active": False,
+    "language_chooser": False,
 }
 
-
+JAZZMIN_UI_TWEAKS = {
+    "theme": "slate",
+    "dark_mode_theme": "slate",
+    "navbar": "navbar-dark navbar-black",
+    "sidebar": "sidebar-dark-black",
+    "brand_colour": "navbar-black",
+    "accent": "accent-cyan",
+    "button_classes": {
+        "primary": "btn-primary btn-glow",
+        "secondary": "btn-secondary",
+        "info": "btn-info btn-glow",
+        "warning": "btn-warning",
+        "danger": "btn-danger btn-glow",
+        "success": "btn-success btn-glow",
+    },
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -231,8 +221,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 # Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -277,6 +266,15 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
 # Security headers (production)
+# Disable HTTPS redirect for local development
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
+
+# Keep your existing headers
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
