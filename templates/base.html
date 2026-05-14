@@ -1,57 +1,38 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TrustVault Africa Ltd{% endblock %}</title>
-    
-    <!-- Official Tailwind Play CDN -->
+    <title>{% block title %}TrustVault Africa{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <link rel="stylesheet" href="{% static 'css/haven-style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: {
-                            "50":"#eff6ff", "100":"#dbeafe", "200":"#bfdbfe", "300":"#93c5fd", 
-                            "400":"#60a5fa", "500":"#3b82f6", "600":"#2563eb", "700":"#1d4ed8", 
-                            "800":"#1e40af", "900":"#1e3a8a", "950":"#172554"
+                        haven: {
+                            dark: '#0f3d5e',
+                            primary: '#1a5f8a',
+                            accent: '#d4a853',
+                            light: '#f8f9fa',
                         }
                     }
                 }
             }
         }
     </script>
-    
-    <!-- Material Symbols for Icons -->
-    <link rel="stylesheet" href="https://googleapis.com" />
+    {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 font-sans antialiased">
-
-    <!-- Navbar -->
-    {% include "navbar.html" %}
-
-    <!-- Messages/Alerts -->
-    {% include "messages.html" %}
-
-    <div class="flex pt-16 overflow-hidden bg-gray-50">
-        
-        <!-- Sidebar: Only shown if logged in -->
-        {% if user.is_authenticated %}
-            {% include "sidebar.html" %}
-        {% endif %}
-        
-        <!-- Main Content Area -->
-        <div id="main-content" class="relative w-full h-full overflow-y-auto bg-gray-50 {% if user.is_authenticated %}sm:ml-64{% endif %}">
-            <main class="p-6 min-h-screen">
-                {% block content %}{% endblock %}
-            </main>
-
-            <!-- Footer -->
-            {% include "footer.html" %}
-        </div>
-    </div>
-
+<body class="font-sans bg-gray-50">
+    {% include 'components/messages.html' %}
+    {% include 'components/navbar.html' %}
+    <main>{% block content %}{% endblock %}</main>
+    {% include 'components/footer.html' %}
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

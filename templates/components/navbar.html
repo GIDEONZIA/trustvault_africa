@@ -1,0 +1,31 @@
+<<nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="{% url 'public_listings:home' %}" class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-haven-dark rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">TrustVault</span>
+                </a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{% url 'public_listings:listings' %}?type=buy" class="text-gray-600 hover:text-gray-900 font-medium">Buy</a>
+                <a href="{% url 'public_listings:listings' %}?type=rent" class="text-gray-600 hover:text-gray-900 font-medium">Rent</a>
+                <a href="#" class="text-gray-600 hover:text-gray-900 font-medium">About</a>
+                <a href="#" class="text-gray-600 hover:text-gray-900 font-medium">Contact</a>
+            </div>
+            <div class="flex items-center gap-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard:index' %}" class="text-gray-600 hover:text-gray-900 font-medium text-sm">Dashboard</a>
+                    <a href="{% url 'accounts:profile' %}" class="text-gray-600 hover:text-gray-900 font-medium text-sm">Profile</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="text-gray-600 hover:text-gray-900 font-medium text-sm">Sign In</a>
+                {% endif %}
+                <a href="#" class="bg-haven-dark text-white px-5 py-2.5 rounded-lg font-medium hover:bg-haven-primary transition-colors text-sm">List with us</a>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,9 +1,0 @@
-{% if messages %}
-<div class="fixed top-20 right-5 z-50">
-    {% for message in messages %}
-    <div class="p-4 mb-4 text-sm rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}" role="alert">
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
