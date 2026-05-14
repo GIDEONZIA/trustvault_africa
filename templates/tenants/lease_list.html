@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Leases - RentFlow{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Leases</h1>
+    {% if user.is_landlord %}
+    <a href="{% url 'tenants:lease-create' %}" class="btn-primary"><i class="fas fa-plus mr-2"></i>New Lease</a>
+    {% endif %}
+</div>
+{% if leases %}
+<div class="card overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Lease #</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Tenant</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Unit</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Rent</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Status</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Expires</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for lease in leases %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium">{{ lease.lease_number }}</td>
+                <td class="px-4 py-3">{{ lease.tenant.full_name }}</td>
+                <td class="px-4 py-3">{{ lease.unit }}</td>
+                <td class="px-4 py-3">KES {{ lease.monthly_rent|floatformat:0|intcomma }}</td>
+                <td class="px-4 py-3">
+                    <span class="badge {% if lease.status == 'active' %}badge-green{% elif lease.status == 'expired' %}badge-red{% else %}badge-gray{% endif %}">{{ lease.get_status_display }}</span>
+                </td>
+                <td class="px-4 py-3">
+                    {{ lease.end_date }}
+                    {% if lease.is_expiring_soon %}<span class="badge badge-yellow ml-1">Expiring</span>{% endif %}
+                </td>
+                <td class="px-4 py-3">
+                    <a href="{% url 'tenants:lease-detail' lease.pk %}" class="text-blue-600 hover:underline">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card text-center py-12">
+    <p class="text-gray-500">No leases found.</p>
+</div>
+{% endif %}
+{% endblock %}

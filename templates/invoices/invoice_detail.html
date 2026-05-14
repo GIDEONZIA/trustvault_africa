@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ invoice.invoice_number }} - RentFlow{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ invoice.invoice_number }}</h1>
+            <span class="badge {% if invoice.status == 'paid' %}badge-green{% elif invoice.status == 'overdue' %}badge-red{% else %}badge-yellow{% endif %}">{{ invoice.get_status_display }}</span>
+        </div>
+        {% if user.is_landlord and invoice.status != 'paid' and invoice.status != 'waived' %}
+        <div class="flex space-x-2">
+            <a href="{% url 'invoices:send-reminder' invoice.pk %}" class="btn-secondary text-sm">Send Reminder</a>
+            <a href="{% url 'payments:record-manual' invoice.pk %}" class="btn-success text-sm">Record Payment</a>
+            <a href="{% url 'invoices:waive' invoice.pk %}" class="btn-secondary text-sm">Waive</a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="card mb-6">
+        <dl class="grid grid-cols-2 gap-4">
+            <div><dt class="text-sm text-gray-500">Tenant</dt><dd class="font-medium">{{ invoice.lease.tenant.full_name }}</dd></div>
+            <div><dt class="text-sm text-gray-500">Unit</dt><dd class="font-medium">{{ invoice.lease.unit }}</dd></div>
+            <div><dt class="text-sm text-gray-500">Amount</dt><dd class="font-medium">KES {{ invoice.amount|floatformat:0|intcomma }}</dd></div>
+            <div><dt class="text-sm text-gray-500">Paid</dt><dd class="font-medium text-green-600">KES {{ invoice.amount_paid|floatformat:0|intcomma }}</dd></div>
+            <div><dt class="text-sm text-gray-500">Balance</dt><dd class="font-medium text-red-600">KES {{ invoice.balance|floatformat:0|intcomma }}</dd></div>
+            <div><dt class="text-sm text-gray-500">Due Date</dt><dd class="font-medium">{{ invoice.due_date }}</dd></div>
+            <div class="col-span-2"><dt class="text-sm text-gray-500">Description</dt><dd>{{ invoice.description }}</dd></div>
+        </dl>
+    </div>
+    {% if user.is_tenant and invoice.status != 'paid' %}
+    <div class="card">
+        <h3 class="text-lg font-semibold mb-4">Pay with M-Pesa</h3>
+        <form action="{% url 'payments:initiate' invoice.pk %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input type="text" name="phone_number" class="form-input" placeholder="254712345678" value="{{ user.phone_number|default:'' }}" required>
+            </div>
+            <button type="submit" class="btn-success w-full"><i class="fas fa-mobile-alt mr-2"></i>Pay KES {{ invoice.balance|floatformat:0|intcomma }} via M-Pesa</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

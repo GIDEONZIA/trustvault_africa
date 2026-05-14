@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ listing.listing_title|default:listing }} - RentFlow{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <a href="{% url 'public_listings:list' %}" class="text-blue-600 hover:underline text-sm mb-4 inline-block"><i class="fas fa-arrow-left mr-1"></i>Back to Listings</a>
+    <div class="card">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ listing.listing_title|default:listing }}</h1>
+        <p class="text-gray-500 mb-4"><i class="fas fa-map-marker-alt mr-1"></i>{{ listing.building.address }}, {{ listing.building.city }}</p>
+        <div class="text-3xl font-bold text-blue-600 mb-6">KES {{ listing.monthly_rent|floatformat:0|intcomma }}<span class="text-base text-gray-500 font-normal">/month</span></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-500">Type</p>
+                <p class="font-semibold">{{ listing.get_unit_type_display }}</p>
+            </div>
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-500">Bedrooms</p>
+                <p class="font-semibold">{{ listing.bedrooms }}</p>
+            </div>
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-500">Bathrooms</p>
+                <p class="font-semibold">{{ listing.bathrooms }}</p>
+            </div>
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-500">Deposit</p>
+                <p class="font-semibold">KES {{ listing.deposit_amount|floatformat:0|intcomma }}</p>
+            </div>
+        </div>
+        {% if listing.listing_description %}
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">Description</h3>
+            <p class="text-gray-600">{{ listing.listing_description }}</p>
+        </div>
+        {% endif %}
+        {% if listing.building.amenities %}
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">Property Amenities</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for amenity in listing.building.amenities %}
+                <span class="badge badge-blue">{{ amenity }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg text-center">
+            <p class="text-blue-800 font-medium mb-2">Interested in this property?</p>
+            <a href="{% url 'accounts:register' %}" class="btn-primary">Contact Landlord</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

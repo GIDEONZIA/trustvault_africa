@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Record Payment - RentFlow{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Record Manual Payment</h1>
+    <div class="card">
+        <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+            <p class="text-sm"><strong>Invoice:</strong> {{ invoice.invoice_number }}</p>
+            <p class="text-sm"><strong>Balance:</strong> KES {{ invoice.balance|floatformat:0|intcomma }}</p>
+        </div>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Amount (KES)</label>
+                <input type="number" name="amount" class="form-input" value="{{ invoice.balance }}" step="0.01" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                <select name="payment_method" class="form-select">
+                    <option value="cash">Cash</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="mpesa">M-Pesa (manual)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary w-full">Record Payment</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

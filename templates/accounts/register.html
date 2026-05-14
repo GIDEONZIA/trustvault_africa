@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Register - RentFlow{% endblock %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600"><i class="fas fa-building mr-2"></i>RentFlow</h1>
+            <p class="mt-2 text-gray-600">Create your account</p>
+        </div>
+        <div class="card">
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% if form.non_field_errors %}
+                <div class="p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+                <button type="submit" class="btn-primary w-full">Create Account</button>
+            </form>
+            <p class="mt-4 text-center text-sm text-gray-600">
+                Already have an account? <a href="{% url 'accounts:login' %}" class="text-blue-600 hover:underline">Log in</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Properties - RentFlow{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">My Properties</h1>
+    <a href="{% url 'properties:create' %}" class="btn-primary"><i class="fas fa-plus mr-2"></i>Add Property</a>
+</div>
+
+{% if properties %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for property in properties %}
+    <div class="card hover:shadow-md transition">
+        <div class="flex items-start justify-between mb-3">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">{{ property.name }}</h3>
+                <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>{{ property.city }}, {{ property.county }}</p>
+            </div>
+            <span class="badge {% if property.is_active %}badge-green{% else %}badge-gray{% endif %}">
+                {{ property.get_property_type_display }}
+            </span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+            <div class="bg-gray-50 rounded-lg p-2">
+                <p class="text-lg font-bold text-gray-900">{{ property.total_units }}</p>
+                <p class="text-xs text-gray-500">Units</p>
+            </div>
+            <div class="bg-green-50 rounded-lg p-2">
+                <p class="text-lg font-bold text-green-600">{{ property.occupied_units }}</p>
+                <p class="text-xs text-gray-500">Occupied</p>
+            </div>
+            <div class="bg-yellow-50 rounded-lg p-2">
+                <p class="text-lg font-bold text-yellow-600">{{ property.available_units }}</p>
+                <p class="text-xs text-gray-500">Vacant</p>
+            </div>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+            <span class="text-gray-600">Occupancy: {{ property.occupancy_rate }}%</span>
+            <a href="{% url 'properties:detail' property.slug %}" class="text-blue-600 hover:underline">View Details <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card text-center py-12">
+    <i class="fas fa-building text-4xl text-gray-300 mb-4"></i>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">No properties yet</h3>
+    <p class="text-gray-500 mb-4">Start by adding your first property.</p>
+    <a href="{% url 'properties:create' %}" class="btn-primary">Add Property</a>
+</div>
+{% endif %}
+{% endblock %}

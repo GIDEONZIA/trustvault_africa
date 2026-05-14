@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Waive Invoice - RentFlow{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card text-center">
+        <h2 class="text-xl font-bold mb-4">Waive Invoice {{ invoice.invoice_number }}?</h2>
+        <p class="text-gray-600 mb-6">This will mark the invoice as waived. Amount: KES {{ invoice.balance|floatformat:0 }}</p>
+        <form method="post" class="flex space-x-3 justify-center">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">Waive Invoice</button>
+            <a href="{% url 'invoices:detail' invoice.pk %}" class="btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

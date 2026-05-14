@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Delete Property - RentFlow{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card text-center">
+        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Deactivate Property?</h2>
+        <p class="text-gray-600 mb-6">Are you sure you want to deactivate <strong>{{ property.name }}</strong>?</p>
+        <form method="post" class="flex space-x-3 justify-center">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">Deactivate</button>
+            <a href="{% url 'properties:detail' property.slug %}" class="btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
