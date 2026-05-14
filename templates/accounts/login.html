@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login - RentFlow{% endblock %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600"><i class="fas fa-building mr-2"></i>RentFlow</h1>
+            <p class="mt-2 text-gray-600">Sign in to your account</p>
+        </div>
+        <div class="card">
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    {{ form.username }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    {{ form.password }}
+                </div>
+                {% if form.errors %}
+                <div class="p-3 bg-red-50 text-red-700 rounded-lg text-sm">Invalid email or password.</div>
+                {% endif %}
+                <button type="submit" class="btn-primary w-full">Sign In</button>
+            </form>
+            <p class="mt-4 text-center text-sm text-gray-600">
+                Don't have an account? <a href="{% url 'accounts:register' %}" class="text-blue-600 hover:underline">Register</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

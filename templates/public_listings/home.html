@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}RentFlow - Find Your Next Home{% endblock %}
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 -mt-6 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Find Your Perfect Rental in Kenya</h1>
+        <p class="text-xl text-blue-100 mb-8">Apartments, houses, and commercial spaces across Nairobi and beyond</p>
+        <div class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+            <a href="{% url 'public_listings:list' %}" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">Browse Listings</a>
+            <a href="{% url 'accounts:register' %}" class="border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition">List Your Property</a>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Featured Listings</h2>
+    {% if featured_listings %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for listing in featured_listings %}
+        <div class="card hover:shadow-md transition">
+            <div class="mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">{{ listing.listing_title|default:listing }}</h3>
+                <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>{{ listing.building.city }}</p>
+            </div>
+            <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                <span><i class="fas fa-bed mr-1"></i>{{ listing.bedrooms }} Bed</span>
+                <span><i class="fas fa-bath mr-1"></i>{{ listing.bathrooms }} Bath</span>
+                {% if listing.square_footage %}<span><i class="fas fa-ruler-combined mr-1"></i>{{ listing.square_footage }} sqft</span>{% endif %}
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-xl font-bold text-blue-600">KES {{ listing.monthly_rent|floatformat:0|intcomma }}<span class="text-sm text-gray-500 font-normal">/mo</span></span>
+                <a href="{% url 'public_listings:detail' listing.pk %}" class="text-blue-600 hover:underline text-sm">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500 text-center py-8">No listings available yet.</p>
+    {% endif %}
+</div>
+
+<div class="bg-gray-100 py-12 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">For Landlords</h2>
+        <p class="text-gray-600 mb-6">Manage your properties, collect rent via M-Pesa, and automate your rental business.</p>
+        <a href="{% url 'accounts:register' %}" class="btn-primary">Get Started Free</a>
+    </div>
+</div>
+{% endblock %}

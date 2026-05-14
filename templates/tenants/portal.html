@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Tenant Portal - RentFlow{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Tenant Portal</h1>
+    <p class="text-gray-600">Welcome, {{ user.first_name }}!</p>
+</div>
+
+{% if lease %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="stat-card">
+        <p class="text-sm text-gray-500">Your Unit</p>
+        <p class="text-xl font-bold">{{ lease.unit }}</p>
+        <p class="text-xs text-gray-400">{{ lease.unit.building.name }}</p>
+    </div>
+    <div class="stat-card">
+        <p class="text-sm text-gray-500">Monthly Rent</p>
+        <p class="text-xl font-bold text-blue-600">KES {{ lease.monthly_rent|floatformat:0|intcomma }}</p>
+        <p class="text-xs text-gray-400">Due on the {{ lease.payment_day }}th</p>
+    </div>
+    <div class="stat-card">
+        <p class="text-sm text-gray-500">Lease Expires</p>
+        <p class="text-xl font-bold">{{ lease.end_date }}</p>
+        <p class="text-xs text-gray-400">{{ lease.days_until_expiry }} days remaining</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card">
+        <h3 class="text-lg font-semibold mb-4">Pending Invoices</h3>
+        {% if pending_invoices %}
+        <div class="space-y-3">
+            {% for inv in pending_invoices %}
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div>
+                    <p class="font-medium">{{ inv.description }}</p>
+                    <p class="text-xs text-gray-500">Due: {{ inv.due_date }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-semibold">KES {{ inv.balance|floatformat:0|intcomma }}</p>
+                    <a href="{% url 'payments:initiate' inv.pk %}" class="btn-primary text-xs mt-1 inline-block">Pay Now</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-sm text-center py-4">No pending invoices!</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Maintenance Requests</h3>
+            <a href="{% url 'maintenance:create' %}" class="btn-primary text-sm"><i class="fas fa-plus mr-1"></i>New Request</a>
+        </div>
+        {% if maintenance_requests %}
+        <div class="space-y-3">
+            {% for mr in maintenance_requests %}
+            <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                <div>
+                    <p class="text-sm font-medium">{{ mr.title }}</p>
+                    <p class="text-xs text-gray-500">{{ mr.submitted_at|timesince }} ago</p>
+                </div>
+                <span class="badge {% if mr.status == 'completed' %}badge-green{% elif mr.status == 'in_progress' %}badge-blue{% else %}badge-yellow{% endif %}">{{ mr.get_status_display }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-sm text-center py-4">No maintenance requests.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

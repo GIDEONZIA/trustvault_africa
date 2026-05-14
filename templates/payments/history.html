@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Payment History - RentFlow{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold text-gray-900 mb-6">Payment History</h1>
+{% if payments %}
+<div class="card overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Date</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Tenant</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Invoice</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Amount</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Method</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Status</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Receipt</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for payment in payments %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3">{{ payment.created_at|date:"M d, Y" }}</td>
+                <td class="px-4 py-3">{{ payment.tenant.full_name }}</td>
+                <td class="px-4 py-3">{{ payment.invoice.invoice_number }}</td>
+                <td class="px-4 py-3 font-medium">KES {{ payment.amount|floatformat:0|intcomma }}</td>
+                <td class="px-4 py-3">{{ payment.get_payment_method_display }}</td>
+                <td class="px-4 py-3">
+                    <span class="badge {% if payment.status == 'completed' %}badge-green{% elif payment.status == 'failed' %}badge-red{% else %}badge-yellow{% endif %}">{{ payment.get_status_display }}</span>
+                </td>
+                <td class="px-4 py-3">{% if payment.mpesa_receipt %}{{ payment.mpesa_receipt }}{% else %}-{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card text-center py-12"><p class="text-gray-500">No payment history.</p></div>
+{% endif %}
+{% endblock %}

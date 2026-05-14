@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Invoices - RentFlow{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Invoices</h1>
+        <p class="text-gray-500">Total Outstanding: <span class="font-semibold text-orange-600">KES {{ total_outstanding|floatformat:0|intcomma }}</span></p>
+    </div>
+    {% if user.is_landlord %}
+    <a href="{% url 'invoices:create' %}" class="btn-primary"><i class="fas fa-plus mr-2"></i>Create Invoice</a>
+    {% endif %}
+</div>
+<div class="flex space-x-2 mb-4">
+    <a href="{% url 'invoices:list' %}" class="px-3 py-1 rounded-full text-sm {% if not request.GET.status %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">All</a>
+    <a href="{% url 'invoices:list' %}?status=pending" class="px-3 py-1 rounded-full text-sm {% if request.GET.status == 'pending' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">Pending</a>
+    <a href="{% url 'invoices:list' %}?status=overdue" class="px-3 py-1 rounded-full text-sm {% if request.GET.status == 'overdue' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">Overdue</a>
+    <a href="{% url 'invoices:list' %}?status=paid" class="px-3 py-1 rounded-full text-sm {% if request.GET.status == 'paid' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">Paid</a>
+</div>
+{% if invoices %}
+<div class="card overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Invoice #</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Tenant</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Unit</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Amount</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Balance</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Due Date</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Status</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-600">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for invoice in invoices %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium">{{ invoice.invoice_number }}</td>
+                <td class="px-4 py-3">{{ invoice.lease.tenant.full_name }}</td>
+                <td class="px-4 py-3">{{ invoice.lease.unit }}</td>
+                <td class="px-4 py-3">KES {{ invoice.amount|floatformat:0|intcomma }}</td>
+                <td class="px-4 py-3 {% if invoice.balance > 0 %}text-red-600 font-medium{% endif %}">KES {{ invoice.balance|floatformat:0|intcomma }}</td>
+                <td class="px-4 py-3">{{ invoice.due_date }}</td>
+                <td class="px-4 py-3">
+                    <span class="badge {% if invoice.status == 'paid' %}badge-green{% elif invoice.status == 'overdue' %}badge-red{% elif invoice.status == 'partially_paid' %}badge-yellow{% else %}badge-blue{% endif %}">{{ invoice.get_status_display }}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <a href="{% url 'invoices:detail' invoice.pk %}" class="text-blue-600 hover:underline">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card text-center py-12"><p class="text-gray-500">No invoices found.</p></div>
+{% endif %}
+{% endblock %}

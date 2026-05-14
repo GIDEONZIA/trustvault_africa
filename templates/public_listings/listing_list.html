@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Available Rentals - RentFlow{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Available Rentals</h1>
+    <div class="card mb-6">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <input type="text" name="city" value="{{ request.GET.city|default:'' }}" class="form-input" placeholder="City">
+            <select name="type" class="form-select">
+                <option value="">All Types</option>
+                <option value="studio" {% if request.GET.type == 'studio' %}selected{% endif %}>Studio</option>
+                <option value="1_bedroom" {% if request.GET.type == '1_bedroom' %}selected{% endif %}>1 Bedroom</option>
+                <option value="2_bedroom" {% if request.GET.type == '2_bedroom' %}selected{% endif %}>2 Bedroom</option>
+                <option value="3_bedroom" {% if request.GET.type == '3_bedroom' %}selected{% endif %}>3 Bedroom</option>
+            </select>
+            <input type="number" name="min_rent" value="{{ request.GET.min_rent|default:'' }}" class="form-input" placeholder="Min Rent">
+            <input type="number" name="max_rent" value="{{ request.GET.max_rent|default:'' }}" class="form-input" placeholder="Max Rent">
+            <button type="submit" class="btn-primary">Search</button>
+        </form>
+    </div>
+    {% if listings %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for listing in listings %}
+        <div class="card hover:shadow-md transition">
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ listing.listing_title|default:listing }}</h3>
+            <p class="text-sm text-gray-500 mb-3"><i class="fas fa-map-marker-alt mr-1"></i>{{ listing.building.city }}, {{ listing.building.county }}</p>
+            <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                <span><i class="fas fa-bed mr-1"></i>{{ listing.bedrooms }} Bed</span>
+                <span><i class="fas fa-bath mr-1"></i>{{ listing.bathrooms }} Bath</span>
+                <span class="badge badge-green">{{ listing.get_unit_type_display }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-xl font-bold text-blue-600">KES {{ listing.monthly_rent|floatformat:0|intcomma }}<span class="text-sm text-gray-500 font-normal">/mo</span></span>
+                <a href="{% url 'public_listings:detail' listing.pk %}" class="btn-primary text-sm">View</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card text-center py-12"><p class="text-gray-500">No listings match your search.</p></div>
+    {% endif %}
+</div>
+{% endblock %}
